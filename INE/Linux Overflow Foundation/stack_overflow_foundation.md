@@ -80,10 +80,12 @@ $ python -c "print('A'*516+'B'*4+'C*100')" > input.txt
 ```
 
 Run the input file in gdb debugger, we can see the `EIP` overrided with 0x42424242 (meant BBBB). We are completely done with overriding the `EIP`.
+
 ![image4.png](image4.png)
 
 ### 2.3 Execute the Shellcode
 #### 2.3.1 Shellcode generation
+
 To generate the shellcode, in this section we will use msfvernom to genterate it
 
 ```bash
