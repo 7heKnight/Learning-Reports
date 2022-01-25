@@ -1,5 +1,7 @@
 # [pwnable.kr](http://pwnable.kr/play.php) - bof Challenge
-![[pwnable.kr-website.png]]
+
+![pwnable.kr-website.png](pwnable.kr-website.png)
+
 ## 1.1 Getting resource
 ```sh
 $ wget http://pwnable.kr/bin/bof && wget http://pwnable.kr/bin/bof.c
