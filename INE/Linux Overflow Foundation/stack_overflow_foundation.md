@@ -1,7 +1,9 @@
 # Linux Buffer Overflow Foundation
 ## 1. What is Buffer Overflow
 Exploiting the behavior of a buffer overflow is a well-known security exploit. On many systems, the memory layout of a program, or the system as a whole, is well defined. By sending in data designed to cause a buffer overflow, it is possible to write into areas known to hold executable code and replace it with malicious code, or to selectively overwrite data pertaining to the program's state, therefore causing behavior that was not intended by the original programmer. Buffers are widespread in operating system (OS) code, so it is possible to make attacks that perform privilege escalation and gain unlimited access to the computer's resources. The famed Morris worm in 1988 used this as one of its attack techniques.
-![[bo_imagination.png](bo_imagination.png)
+
+![bo_imagination.png](bo_imagination.png)
+
 ## 2. Overflowing Program on Linux
 ### 2.1 Setting up environment
 First up, we need to turn off Address Space Layout Randomization (ASLR):
