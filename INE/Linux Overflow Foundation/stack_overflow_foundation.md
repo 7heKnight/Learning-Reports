@@ -1,7 +1,9 @@
 # Linux Buffer Overflow Foundation
 ## 1. What is Buffer Overflow
 Exploiting the behavior of a buffer overflow is a well-known security exploit. On many systems, the memory layout of a program, or the system as a whole, is well defined. By sending in data designed to cause a buffer overflow, it is possible to write into areas known to hold executable code and replace it with malicious code, or to selectively overwrite data pertaining to the program's state, therefore causing behavior that was not intended by the original programmer. Buffers are widespread in operating system (OS) code, so it is possible to make attacks that perform privilege escalation and gain unlimited access to the computer's resources. The famed Morris worm in 1988 used this as one of its attack techniques.
-![[bo_imagination.png]]
+
+[bo_imagination.png](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image1.png)
+
 ## 2. Overflowing Program on Linux
 ### 2.1 Setting up environment
 First up, we need to turn off Address Space Layout Randomization (ASLR):
@@ -41,12 +43,16 @@ Let's make 500 bytes of `A` and send to program to see if it crash
 ```bash
 $ python3 -c "print('A'*500)" | ./oversize_overflow
 ```
-![[image1.png]]
+
+[image1.png](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image1.png)
+
 As we can see, the program works good, so let's try with bigger size:
 ```bash
 $ python3 -c "print('A'*700)" | ./oversize_overflow
 ```
-![[image2.png]]
+
+[image2.png](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image2.png)
+
 At this time, the program crashed with 700 bytes size. Now on, using the gdb debugger to determine and get exact offset and override the `EIP`:
 ```bash
 $ gdb -q oversize_overflow
@@ -58,7 +64,9 @@ gdb-peda$ pattern create 700 1.txt
 Writing pattern of 700 chars to filename "1.txt"
 gdb-peda$ r < 1.txt
 ```
-![[image3.png]]
+
+[image3.png](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image3.png)
+
 Here is the reuslt, and we can see the `EIP` (`0x4e734138`) point to invalid address, so the program crashed. Now, we are going to get exact size:
 ```sh
 gdb-peda$ pattern offset 0x4e734138
