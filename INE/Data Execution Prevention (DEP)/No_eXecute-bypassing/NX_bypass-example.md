@@ -2,7 +2,7 @@
 - The NX bit (no-execute) is a technology used in CPUs to segregate areas of memory for use by either storage of processor instructions (code) or for storage of data, a feature normally only found in Harvard architecture processors. However, the NX bit is being increasingly used in conventional von Neumann architecture processors for security reasons.
 
 - Return to library C (ret2libc) and return to system (ret2sys) are technique usally use to bypass the No Execution bit and is the technique I'll use in this report.
-----------
+---
 # 2. NX Bypass
 ## 2.1 Building Up Environment
 
@@ -151,4 +151,8 @@ Nothing happended, because there is no listener to keep and get the input, outpu
 
 ![image10.png](image10.png)
 
------------------
+---
+# 3. Reference
+- [https://en.wikipedia.org/wiki/NX_bit](https://en.wikipedia.org/wiki/NX_bit)
+- [https://my.ine.com/CyberSecurity/courses/eb1c83e7/linux-exploit-development](https://my.ine.com/CyberSecurity/courses/eb1c83e7/linux-exploit-development)
+---
