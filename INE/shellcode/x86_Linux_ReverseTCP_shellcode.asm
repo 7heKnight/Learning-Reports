@@ -51,3 +51,8 @@ jns loop
   xor ecx, ecx      ; zero out ecx
   mov edx, ecx
   int 0x80
+  ; ================================================================================
+  xor eax, eax      ; eax = 0x0
+  inc eax           ; eax = 0x1
+  xor ebx, ebx      ; ebx = 0
+  int 0x80          ; execute exit(0)
