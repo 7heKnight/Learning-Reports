@@ -10,7 +10,7 @@ $ ld -m elf_i386 <asm_output_file.o> -o <binary_name>
 
 ```bash
 $ nasm -f elf_x86_64 <file_assembly.asm> -o <output_file.o>
-$ nasm -m elf_x86_64 <asm_output_file.o> -o <binary_name>
+$ ld -m elf_x86_64 <asm_output_file.o> -o <binary_name>
 ```
 
 ---
