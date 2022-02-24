@@ -3,7 +3,7 @@
 
 ```bash
 $ nasm -f elf32 <file_assembly.asm> -o <output_file.o>
-$ nasm -m elf_i386 <asm_output_file.o> -o <binary_name>
+$ ld -m elf_i386 <asm_output_file.o> -o <binary_name>
 ```
 
 - For **x64**:
